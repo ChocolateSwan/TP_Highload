@@ -1,13 +1,14 @@
 import socket
 import select
 import os
+from controller import parse_request
 
 def handler():
 	if EOL1 in requests[fileno] or EOL2 in requests[fileno]:
 		epoll.modify(fileno, select.EPOLLOUT | select.EPOLLET)
 		print('-'*40 + '\n' + requests[fileno].decode()[:-2])
 
-PORT = 8893
+PORT = 8894
 
 print("Starting server on port {}, document root: не важно пока".format(PORT))
 
@@ -57,6 +58,8 @@ try:
 				if EOL1 in requests[fileno] or EOL2 in requests[fileno]:
 					epoll.modify(fileno, select.EPOLLOUT | select.EPOLLET)
 					print('-'*40 + '\n' + requests[fileno].decode()[:-2])
+				print ('#'*40)
+				parse_request(requests[fileno].decode())
 			elif event & select.EPOLLOUT:
 				try:
 					while len(responses[fileno]) > 0:
