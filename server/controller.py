@@ -1,11 +1,10 @@
-from mime_types import MIME_TYPES
-from response_codes import RESPONSE_CODES
+from constants import MIME_TYPES, RESPONSE_CODES
 import datetime
 import fcntl
 import re
 import os
 
-document_root = "./"
+document_root = "./picture/"
 
 class Request:
 	""" HTTP Request """
@@ -67,8 +66,6 @@ class Response:
 
 
 def parse_request(data, document_root = ""):
-	# self.data = data.decode('UTF-8')
-	print(data)
 	request = Request()
 	request.method = re.search(r'^\w+', data).group()
 	request.protocol = re.findall(r'HTTP/([1-9.]+)', data)[0]
@@ -106,15 +103,15 @@ def parse_request(data, document_root = ""):
 
 		else:
 			print ("qqqqqqqqqqqqqqq")
-			print (os.path.join(document_root, "apple.jpg"))
+			print (os.path.join("./picture", "apple.jpg"))
 			try:
-				file = os.open(os.path.join(document_root, "apple.jpg"), os.O_RDONLY)
+				file = os.open(os.path.join("./picture", "hello"), os.O_RDONLY)
 				flag = fcntl.fcntl(file, fcntl.F_GETFL)
 				fcntl.fcntl(file, fcntl.F_SETFL, flag | os.O_NONBLOCK)
 				print(file)
 			except (FileNotFoundError, IsADirectoryError):
 				if (request.url[-1:]) == '/':
-					return Response(ResponseCode.FORBIDDEN, request.protocol).build()
+					return Response(RESPONSE_CODES["FORBIDDEN"], request.protocol).build()
 				else:
 					return Response(ResponseCode.NOT_FOUND, request.protocol).build()
 
@@ -138,7 +135,7 @@ def parse_request(data, document_root = ""):
 				file = None
 	r = response.build()
 
-	return r
+	return r, file
 
 
 

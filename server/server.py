@@ -8,7 +8,7 @@ def handler():
 		epoll.modify(fileno, select.EPOLLOUT | select.EPOLLET)
 		print('-'*40 + '\n' + requests[fileno].decode()[:-2])
 
-PORT = 8897
+PORT = 8899
 
 print("Starting server on port {}, document root: не важно пока".format(PORT))
 
@@ -34,7 +34,7 @@ epoll = select.epoll()
 epoll.register(serversocket.fileno(), select.EPOLLIN | select.EPOLLET)
 
 try:
-	connections = {}; requests = {}; responses = {}
+	connections = {}; requests = {}; responses = {}; files = {}
 	while True:
 		events = epoll.poll(1)
 		for fileno, event in events:
@@ -59,7 +59,20 @@ try:
 					epoll.modify(fileno, select.EPOLLOUT | select.EPOLLET)
 					print('-'*40 + '\n' + requests[fileno].decode()[:-2])
 				print ('#'*40)
-				r = parse_request(requests[fileno].decode())
+				r, file = parse_request(requests[fileno].decode()) # 'UTF-8'
+				print (file)
+				#buffer = os.read(file, FILE_BLOCK_SIZE) #&&&&&&&&&&&&&
+				#11111111111111111111111111111111111111111
+				buff = b""
+				file_content = b""
+				while True:
+					file_content += buff
+					buff = os.read(file, 1024)
+					if not buff:
+						break
+				#111111111111111111111111111111111111111111
+				print (file_content)
+				responses[fileno] = r + file_content
 				print (r)
 			elif event & select.EPOLLOUT:
 				try:
