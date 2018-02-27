@@ -1,14 +1,14 @@
 import socket
 import select
 import os
-from controller import parse_request, Response
+from controller import request_processing, Response
 
 def handler():
 	if EOL1 in requests[fileno] or EOL2 in requests[fileno]:
 		epoll.modify(fileno, select.EPOLLOUT | select.EPOLLET)
 		print('-'*40 + '\n' + requests[fileno].decode()[:-2])
 
-PORT = 8899
+PORT = 8902
 
 print("Starting server on port {}, document root: не важно пока".format(PORT))
 
@@ -25,7 +25,9 @@ serversocket.bind(('0.0.0.0', PORT))
 serversocket.listen(1)
 serversocket.setblocking(0)
 
-for i in range(4-1):
+
+
+for i in range(4-3):
 	pid = os.fork()
 	if pid == 0:
 		break
@@ -34,8 +36,10 @@ epoll = select.epoll()
 epoll.register(serversocket.fileno(), select.EPOLLIN | select.EPOLLET)
 
 try:
+	print ("qqqqqqqqqqqqqqqqqqqq")
 	connections = {}; requests = {}; responses = {}; files = {}
 	while True:
+		# print ("pid", pid)
 		events = epoll.poll(1)
 		for fileno, event in events:
 			if fileno == serversocket.fileno():
@@ -50,31 +54,42 @@ try:
 				except socket.error:
 					pass
 			elif event & select.EPOLLIN:
+				print ("inn pid", pid)
 				try:
 					while True:
-						requests[fileno] += connections[fileno].recv(1024)
+						print ("что не так")
+						buffer = b""
+						buffer = connections[fileno].recv(1024)
+						if not buffer:
+							break;
+						requests[fileno] += buffer
+						print(requests[fileno].decode())
 				except socket.error:
+					print ("что не так2")
 					pass
+				print ("что не так1")
 				if EOL1 in requests[fileno] or EOL2 in requests[fileno]:
 					epoll.modify(fileno, select.EPOLLOUT | select.EPOLLET)
-					print('-'*40 + '\n' + requests[fileno].decode()[:-2])
+					print('-'*40 + '\n' + requests[fileno].decode('UTF-8')[:-2])
 				print ('#'*40)
-				r, file = parse_request(requests[fileno].decode()) # 'UTF-8'
-				print (file)
+				r, file = request_processing(requests[fileno].decode()) # 'UTF-8'
+				# print (file)
 				#buffer = os.read(file, FILE_BLOCK_SIZE) #&&&&&&&&&&&&&
 				#11111111111111111111111111111111111111111
 				buff = b""
 				file_content = b""
-				while True:
-					file_content += buff
-					buff = os.read(file, 1024)
-					if not buff:
-						break
+				if file:
+					while True:
+						file_content += buff
+						buff = os.read(file, 1024)
+						if not buff:
+							break
 				#111111111111111111111111111111111111111111
-				print (file_content)
+				# print (file_content)
 				responses[fileno] = r + file_content
 				print (r)
 			elif event & select.EPOLLOUT:
+				print ("out pid", pid)
 				try:
 					while len(responses[fileno]) > 0:
 						byteswritten = connections[fileno].send(responses[fileno])

@@ -17,3 +17,14 @@ RESPONSE_CODES = {
 	'NOT_ALLOWED': '405 Method Not Allowed',
 	'FORBIDDEN': '403 Forbidden'
 }
+
+RESPONSE_OK = 'HTTP/{} {}\r\n' \
+			'Content-Type: {}\r\n' \
+			'Content-Length: {}\r\n'\
+			'Date: {}\r\n' \
+			'Server: PythonServer\r\n\r\n'
+
+RESPONSE_FAIL = 'HTTP/{} {}\r\n' \
+			'Server: PythonServer'
+
+DATETIME_TEMPLATE = '%a, %d %b %Y %H:%M:%S GMT'
