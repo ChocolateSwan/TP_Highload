@@ -72,7 +72,7 @@ try:
 					epoll.modify(fileno, select.EPOLLOUT | select.EPOLLET)
 					print('-'*40 + '\n' + requests[fileno].decode('UTF-8')[:-2])
 				print ('#'*40)
-				r, file = request_processing(requests[fileno].decode()) # 'UTF-8'
+				r, file = request_processing(requests[fileno].decode(), '') # 'UTF-8'
 				# print (file)
 				#buffer = os.read(file, FILE_BLOCK_SIZE) #&&&&&&&&&&&&&
 				#11111111111111111111111111111111111111111

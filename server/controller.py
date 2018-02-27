@@ -1,13 +1,16 @@
-from constants import MIME_TYPES, RESPONSE_CODES, RESPONSE_OK, RESPONSE_FAIL, DATETIME_TEMPLATE, ALLOW_METHODS
-from HTTP_request import Request
-
 import urllib.parse
 import datetime
 import fcntl
 import re
 import os
 
-document_root = "/"
+from HTTP_request import Request
+from constants import MIME_TYPES,\
+						 RESPONSE_CODES,\
+						  RESPONSE_OK,\
+						   RESPONSE_FAIL,\
+						    DATETIME_TEMPLATE,\
+						     ALLOW_METHODS
 
 def build_response(code, 
 					protocol, 
@@ -20,7 +23,8 @@ def build_response(code,
 									content_length,
 									datetime.datetime.utcnow().strftime(DATETIME_TEMPLATE)).encode()
 	else:
-		return RESPONSE_FAIL.format(protocol, code).encode()
+		return RESPONSE_FAIL.format(protocol, 
+									code).encode()
 
 
 def parse_request(data):
