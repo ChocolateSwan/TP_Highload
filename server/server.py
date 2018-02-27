@@ -1,7 +1,7 @@
 import socket
 import select
 import os
-from controller import request_processing, Response
+from controller import request_processing
 
 def handler():
 	if EOL1 in requests[fileno] or EOL2 in requests[fileno]:

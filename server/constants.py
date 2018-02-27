@@ -28,3 +28,5 @@ RESPONSE_FAIL = 'HTTP/{} {}\r\n' \
 			'Server: PythonServer'
 
 DATETIME_TEMPLATE = '%a, %d %b %Y %H:%M:%S GMT'
+
+ALLOW_METHODS = ['HEAD', 'GET']
