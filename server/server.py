@@ -1,11 +1,25 @@
+
+import configparser
 import os
 import socket
 import select
+from pathlib import Path
 
 from controller import request_processing
 
-PORT = 8902
-DOCUMENT_ROOT =  ''
+print ("qwertyuio")
+# print(os.listdir("."))
+
+config = configparser.ConfigParser()
+config.read_file(open(r'./server.conf'))
+
+PORT = int(config.get('server-conf', 'listen_port'))
+CPU_LIMIT = int(config.get('server-conf', 'cpu_limit'))
+DOCUMENT_ROOT = config.get('server-conf', 'document_root')
+
+
+# PORT = 8902
+# DOCUMENT_ROOT =  ''
 
 print("Starting server on port {}, document root: {}".format(PORT, DOCUMENT_ROOT))
 
@@ -19,7 +33,7 @@ serversocket.bind(('0.0.0.0', PORT))
 serversocket.listen(1)
 serversocket.setblocking(0)
 
-for i in range(1):
+for _ in range(1, CPU_LIMIT ):
 	pid = os.fork()
 	if pid == 0:
 		break
@@ -29,9 +43,9 @@ epoll.register(serversocket.fileno(), select.EPOLLIN | select.EPOLLET)
 
 try:
 	print ("Start thread")
-	connections = {}; requests = {}; responses = {}; files = {}
+	connections = {}; requests = {}; responses = {}; 
 	while True:
-		print ("Я работаю", pid)
+		print ("pid = ", pid )
 		events = epoll.poll(1)
 
 		for fileno, event in events:
@@ -51,7 +65,7 @@ try:
 				print ("Inn: pid = ", pid)
 				try:
 					while True:
-						print ("Получаем данные ...")
+						print ("Getting data ...", select.EPOLLIN)
 						buffer = b""
 						buffer = connections[fileno].recv(1024)
 						if not buffer:
@@ -64,7 +78,7 @@ try:
 					epoll.modify(fileno, select.EPOLLOUT | select.EPOLLET)
 					print('-'*40 + '\n' + requests[fileno].decode('UTF-8')[:-2])
 
-				resp, file = request_processing(requests[fileno].decode(), '') # 'UTF-8'
+				resp, file = request_processing(requests[fileno].decode(), DOCUMENT_ROOT) # 'UTF-8'
 				print('pid = ', pid, ' ', resp, file)
 
 				buff = b""
@@ -72,7 +86,7 @@ try:
 
 				if file:
 					while True:
-						print ("Получаем файл ...")
+						print ("Getting file...")
 						file_content += buff
 						buff = os.read(file, 1024)
 						if not buff:
@@ -108,21 +122,3 @@ finally:
 	epoll.unregister(serversocket.fileno())
 	epoll.close()
 	serversocket.close()
-
-
-
-
-
-
-
-# 2 - 5769
-# 3 - 3081
-# 4 - 
-
-
-
-
-
-
-
-

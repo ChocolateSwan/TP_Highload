@@ -1,8 +1,13 @@
+# -*- coding: utf-8 -*- 
 import datetime
 import fcntl
 import os
 import re
 import urllib.parse
+# try:
+#     from urllib.parse import urlparse
+# except ImportError:
+#      from urlparse import urlparse
 
 from HTTP_request import HTTP_request
 from constants import MIME_TYPES,\
@@ -34,8 +39,8 @@ def parse_request(request_string):
 	except IndexError:
 		request.method = None
 	try:
-		request.protocol = re.findall(r'HTTP/([1-9.]+)', request_string)[0]
-		request.protocol = "1.1"
+		request.protocol = re.findall(r'HTTP/([0-9.]+)', request_string)[0]
+		# request.protocol = "1.1"
 	except IndexError:
 		request.protocol = None
 	try:

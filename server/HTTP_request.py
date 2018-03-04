@@ -1,5 +1,4 @@
 class HTTP_request:
-	''' параметры HTTP запроса'''
 	def __init__(self):
 		self.method = None
 		self.protocol = None
