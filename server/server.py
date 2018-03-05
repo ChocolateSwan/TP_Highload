@@ -15,9 +15,9 @@ if Path("/etc/httpd.conf").is_file():
 else:
 	config.read_file(open(r'./server.conf'))
 
-PORT = int(config.get('server-conf', 'listen_port'))
-CPU_LIMIT = int(config.get('server-conf', 'cpu_limit'))
-DOCUMENT_ROOT = config.get('server-conf', 'document_root')
+PORT = int(config.get('server-config', 'listen'))
+CPU_LIMIT = int(config.get('server-config', 'cpu_limit'))
+DOCUMENT_ROOT = config.get('server-config', 'document_root')
 
 
 # PORT = 8902
