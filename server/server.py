@@ -7,11 +7,13 @@ from pathlib import Path
 
 from controller import request_processing
 
-print ("qwertyuio")
-# print(os.listdir("."))
-
 config = configparser.ConfigParser()
-config.read_file(open(r'./server.conf'))
+
+# !?
+if Path("/etc/httpd.conf").is_file():
+	config.read_file(open(r'/etc/httpd.conf'))
+else:
+	config.read_file(open(r'./server.conf'))
 
 PORT = int(config.get('server-conf', 'listen_port'))
 CPU_LIMIT = int(config.get('server-conf', 'cpu_limit'))
