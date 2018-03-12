@@ -37,6 +37,7 @@ serversocket.bind(('0.0.0.0', PORT))
 serversocket.listen(1)
 serversocket.setblocking(0)
 
+# CPU_LIMIT
 for _ in range(1, CPU_LIMIT ):
 	pid = os.fork()
 	if pid == 0:
@@ -46,10 +47,10 @@ epoll = select.epoll()
 epoll.register(serversocket.fileno(), select.EPOLLIN | select.EPOLLET)
 
 try:
-	print ("Start thread")
+	# print ("Start thread")
 	connections = {}; requests = {}; responses = {}; 
 	while True:
-		print ("pid = ", pid )
+		# print ("pid = ", pid )
 		events = epoll.poll(1)
 
 		for fileno, event in events:
@@ -66,10 +67,10 @@ try:
 					pass
 
 			elif event & select.EPOLLIN:
-				print ("Inn: pid = ", pid)
+				# print ("Inn: pid = ", pid)
 				try:
 					while True:
-						print ("Getting data ...", select.EPOLLIN)
+						# print ("Getting data ...", select.EPOLLIN)
 						buffer = b""
 						buffer = connections[fileno].recv(1024)
 						if not buffer:
@@ -80,27 +81,28 @@ try:
 
 				if EOL1 in requests[fileno] or EOL2 in requests[fileno]:
 					epoll.modify(fileno, select.EPOLLOUT | select.EPOLLET)
-					print('-'*40 + '\n' + requests[fileno].decode('UTF-8')[:-2])
+					# print('-'*40 + '\n' + requests[fileno].decode('UTF-8')[:-2])
 
 				resp, file = request_processing(requests[fileno].decode(), DOCUMENT_ROOT) # 'UTF-8'
-				print('pid = ', pid, ' ', resp, file)
+				# print('pid = ', pid, ' ', resp, file)
 
 				buff = b""
 				file_content = b""
 
 				if file:
 					while True:
-						print ("Getting file...")
+						# print ("Getting file...")
 						file_content += buff
 						buff = os.read(file, 1024)
 						if not buff:
 							break
+					os.close(file)
 
 				responses[fileno] = resp + file_content
 
 			elif event & select.EPOLLOUT:
 
-				print ('Out: pid = ', pid)
+				# print ('Out: pid = ', pid)
 
 				try:
 					while len(responses[fileno]) > 0:
@@ -122,7 +124,7 @@ except KeyboardInterrupt:
 	print ('KeyboardInterrupt =(') 
 
 finally:
-	print ("oops")
+	# print ("oops")
 	epoll.unregister(serversocket.fileno())
 	epoll.close()
 	serversocket.close()
