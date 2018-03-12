@@ -15,6 +15,7 @@ if Path("/etc/httpd.conf").is_file():
 else:
 	config.read_file(open(r'./server.conf'))
 
+
 try:
 	PORT = int(config.get('server-config', 'listen'))
 	CPU_LIMIT = int(config.get('server-config', 'cpu_limit'))
@@ -23,6 +24,7 @@ except:
 	PORT = 80
 	DOCUMENT_ROOT =  '/var/www/html'
 	CPU_LIMIT = 4
+
 
 
 print("Starting server on port {}, document root: {}".format(PORT, DOCUMENT_ROOT))
